@@ -1,0 +1,47 @@
+name: Deploy Express Service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Express service instance
+        env:
+          PRIVATE_KEY: ${{ secrets.EXPRESS_SERVER_SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.EXPRESS_SERVER_HOST }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST '
+            # Create directory if it doesn't exist
+            mkdir -p ~/express-service
+          '
+          
+          # Copy files to the EC2 instance
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/express-service/
+          
+          
+          # Install dependencies and manage the application with PM2
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST '
+            cd ~/express-service
+            npm install
+            pm2 describe app > /dev/null
+            if [ $? -eq 0 ]; then
+              pm2 restart app
+            else
+              pm2 start app.js --name app
+            fi
+          '
+          
+          rm -f private_key.pem
