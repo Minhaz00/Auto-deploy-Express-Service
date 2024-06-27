@@ -20,16 +20,19 @@ jobs:
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST '
-            # Create directory if it doesn't exist
-            mkdir -p ~/express-service
-          '
+          # Ensure SSH and SCP are available
+          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+          which scp || ( apt-get update -y && apt-get install openssh-client -y )
           
-          # Copy files to the EC2 instance
-          scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/express-service/
+          eval $(ssh-agent -s)
+          ssh-add private_key.pem
           
-          # Install dependencies and manage the application with PM2
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST '
+          # Create directory and copy files
+          ssh -o StrictHostKeyChecking=no $HOST "mkdir -p ~/express-service"
+          scp -o StrictHostKeyChecking=no -r ./* $HOST:~/express-service/
+          
+          # Run commands on remote server
+          ssh -o StrictHostKeyChecking=no $HOST '
             cd ~/express-service
             npm ci
             pm2 describe app > /dev/null
