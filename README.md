@@ -2,7 +2,7 @@
 
 To implement this CI/CD pipeline using GitHub Actions, we'll go through the process step-by-step. We'll start with setting up a basic Express server and GitHub repository, then move on to configuring the GitHub Actions workflow to deploy the service via SSH from runner server to nodejs server.
 
-![alt text](./image-2.jpg)
+![alt text](https://github.com/Minhaz00/Auto-deploy-Express-Service/blob/main/image/image-2.jpg?raw=true)
 
 
 ## 1. Create a new Repository and two AWS EC2 Instances
@@ -221,7 +221,7 @@ This will trigger the GitHub Actions workflow, which will:
 
 Now if we visit `http://<express-service-public-ip>:5000` , We will see the express service is up and running:
 
-![alt text](image.png)
+![alt text](https://github.com/Minhaz00/Auto-deploy-Express-Service/blob/main/image/image.png?raw=true)
 
 Let's change the express service code and verify the auto deployment:
 
@@ -251,4 +251,4 @@ git push
 
 Now if we visit `http://<express-service-public-ip>:5000` , We will see the express service is up and running and the message has been changed:
 
-![alt text](image-1.png)
+![alt text](https://github.com/Minhaz00/Auto-deploy-Express-Service/blob/main/image/image-1.png?raw=true)
