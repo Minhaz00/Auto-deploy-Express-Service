@@ -169,7 +169,7 @@ In your GitHub repository, go to Settings > Secrets and add the following secret
 
         You will get something like this after the final command (marked portion):
 
-        ![alt text](https://github.com/Minhaz00/NodeJS-Tasks/blob/main/14.%20Deploy%20Express%20App%20in%20EC2%20Using%20Github%C2%A0Action/images/image-6.png?raw=true)
+        ![alt text](https://github.com/Minhaz00/Auto-deploy-Express-Service/blob/main/image/image-3.png?raw=true)
 
         After that, keep hitting `Enter` to continue with the default settings. Now if you go to the **github repository** > **settings** > **runners**, you will get something like this:
 
