@@ -7,8 +7,30 @@ To implement this CI/CD pipeline using GitHub Actions, we'll go through the proc
 
 ## 1. Create a new Repository and two AWS EC2 Instances
 
+#### Create github repository
+
 - Go to your github account and create a new repository for the express server.
-- Login to AWS account and create a two new instance. One for runner server and one for nodejs express server. Allow http access from security group inbound rules to the express server instance, so that we can see it form our browser.  
+
+#### Setup AWS EC2 Instance
+1. **Login to AWS Console**: Login to your AWS account.
+2. **Launch EC2 Instance**:
+   - Choose "Ubuntu" as the operating system.
+   - Ensure it's a free-tier eligible instance type.
+   - Create a new key pair or use an existing one.
+
+        ![alt text](https://github.com/Minhaz00/NodeJS-Tasks/blob/main/14.%20Deploy%20Express%20App%20in%20EC2%20Using%20Github%C2%A0Action/images/image.png?raw=true)
+
+   
+3. **Configure Security Group**:
+    - Go to security group > select the one for our instance > Edit inbound rules.
+    - Allow SSH (port 22) from your IP.
+    - Allow HTTP (port 80) from anywhere.
+
+        ![alt text](https://github.com/Minhaz00/NodeJS-Tasks/blob/main/14.%20Deploy%20Express%20App%20in%20EC2%20Using%20Github%C2%A0Action/images/image-2.png?raw=true)
+
+
+
+
 
 ## 2. Set up a basic Express server locally
 
