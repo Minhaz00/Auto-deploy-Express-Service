@@ -1,56 +1,3 @@
-# name: Deploy Express Service
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   deploy:
-#     runs-on: self-hosted
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Deploy to Express service instance
-#         env:
-#           PRIVATE_KEY: ${{ secrets.EXPRESS_SERVER_SSH_PRIVATE_KEY }}
-#           HOST: ${{ secrets.EXPRESS_SERVER_HOST }}
-#         run: |
-#           echo "$PRIVATE_KEY" > private_key.pem
-#           chmod 600 private_key.pem
-          
-#           # Ensure SSH and SCP are available
-#           which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
-#           which scp || ( apt-get update -y && apt-get install openssh-client -y )
-          
-#           eval $(ssh-agent -s)
-#           ssh-add private_key.pem
-          
-#           # Create directory and copy files
-#           ssh -o StrictHostKeyChecking=no $HOST "mkdir -p ~/express-service"
-#           scp -o StrictHostKeyChecking=no -r ./* $HOST:~/express-service/
-          
-#           # Run commands on remote server
-#           ssh -o StrictHostKeyChecking=no $HOST '
-#             cd ~/express-service
-#             npm ci
-#             pm2 describe app > /dev/null
-#             if [ $? -eq 0 ]; then
-#               pm2 restart app
-#             else
-#               pm2 start app.js --name app
-#             fi
-#           '
-          
-#           rm -f private_key.pem
-
-
-
-
-
-
-
 name: Deploy Express Service
 
 on:
@@ -62,30 +9,32 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Deploy to Express service instance
         env:
           PRIVATE_KEY: ${{ secrets.EXPRESS_SERVER_SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EXPRESS_SERVER_HOST }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.ref_name }}
         run: |
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST '
-            # Create or clear the directory
-            mkdir -p ~/express-service
+          # Ensure SSH and SCP are available
+          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+          which scp || ( apt-get update -y && apt-get install openssh-client -y )
+          
+          eval $(ssh-agent -s)
+          ssh-add private_key.pem
+          
+          # Create directory and copy files
+          ssh -o StrictHostKeyChecking=no $HOST "mkdir -p ~/express-service"
+          scp -o StrictHostKeyChecking=no -r ./* $HOST:~/express-service/
+          
+          # Run commands on remote server
+          ssh -o StrictHostKeyChecking=no $HOST '
             cd ~/express-service
-            rm -rf *
-            
-            # Download the repository content
-            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/$REPO/tarball/$BRANCH | tar xz --strip-components=1
-            
-            # Install dependencies
-            npm install
-            
-            # Start or restart the application using PM2
+            npm ci
             pm2 describe app > /dev/null
             if [ $? -eq 0 ]; then
               pm2 restart app
@@ -94,5 +43,10 @@ jobs:
             fi
           '
           
-          # Clean up
           rm -f private_key.pem
+
+
+
+
+
+
